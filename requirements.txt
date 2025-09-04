@@ -1,0 +1,4 @@
+streamlit==1.38.0
+pyttsx3==2.90
+PyPDF2==3.0.1
+pydub==0.25.1
