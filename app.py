@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import pyttsx3
 import PyPDF2
@@ -6,15 +5,8 @@ import io
 import tempfile
 import os
 import math
-
-# -----------------------
-# Page config
-# -----------------------
 st.set_page_config(page_title="EchoVerse", page_icon="🎧", layout="centered")
 
-# -----------------------
-# Sidebar
-# -----------------------
 st.sidebar.title("🎧 EchoVerse")
 theme_choice = st.sidebar.radio("Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
 st.sidebar.markdown("---")
@@ -22,33 +14,20 @@ if st.sidebar.button("🧹 Reset Preview"):
     st.session_state.preview_text = ""
 if st.sidebar.button("❌ Clear All"):
     st.session_state.clear()
-
-# -----------------------
-# Color palette for headers/buttons
-# -----------------------
-# Light mode
 LIGHT_BG = "#f3ecda"  # Cream
 LIGHT_TEXT = "#c4ac95"  # Khaki
 LIGHT_ACCENT = "#94553d"  # Tan
 LIGHT_SECONDARY = "#ffcba4"  # Peach
 LIGHT_CARD = "#ffffff"  # Card background
-
-# Dark mode (adapted for readability)
 DARK_BG = "#2b1e14"  # dark brown
 DARK_TEXT = "#f3ecda"  # cream
 DARK_ACCENT = "#ffcba4"  # Peach
 DARK_SECONDARY = "#94553d"  # Tan
 DARK_CARD = "#3b2a1f"  # Card background
-
-# Neutral colors for widgets (Preview, Voice, Speed) for readability in both modes
 NEUTRAL_BG_LIGHT = "#fefefe"
 NEUTRAL_BG_DARK = "#2f2f2f"
 NEUTRAL_TEXT_LIGHT = "#333333"
 NEUTRAL_TEXT_DARK = "#fefefe"
-
-# -----------------------
-# Theme assignment
-# -----------------------
 if theme_choice == "🌙 Dark Mode":
     bg_color = DARK_BG
     text_color = DARK_TEXT
@@ -65,10 +44,6 @@ else:
     card_bg = LIGHT_CARD
     widget_bg = NEUTRAL_BG_LIGHT
     widget_text_color = NEUTRAL_TEXT_LIGHT
-
-# -----------------------
-# Custom CSS
-# -----------------------
 st.markdown(f"""
 <style>
 .stApp {{
@@ -110,19 +85,12 @@ textarea[role="textbox"], .stTextInput > div > div > input {{
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------
-# Hero Title
-# -----------------------
 st.markdown(f"""
 <div style="text-align:center; margin-top:1rem; margin-bottom:1rem;">
     <h1 style="font-size:3rem; font-weight:bold; color:{ACCENT_COLOR};">✨ EchoVerse ✨</h1>
     <p style="font-size:1.2rem; color:{text_color}; opacity:0.9;">Turn PDFs & text into audiobooks 🎶</p>
 </div>
 """, unsafe_allow_html=True)
-
-# -----------------------
-# Upload PDF
-# -----------------------
 st.markdown('<div class="section-title">📂 Upload your PDF</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("Upload PDF (text-based)", type=["pdf"])
@@ -137,10 +105,6 @@ if uploaded_file:
         st.success(f"✅ Loaded {num_pages} pages")
     except Exception as e:
         st.error(f"❌ Could not read PDF. Error: {e}")
-
-# -----------------------
-# Page selection
-# -----------------------
 if uploaded_file:
     st.markdown('<div class="section-title">📑 Select Pages</div>', unsafe_allow_html=True)
     cols = st.columns(3)
@@ -160,34 +124,20 @@ if uploaded_file:
             st.session_state.preview_text = "\n".join(sel_parts)
             st.success(f"Loaded pages {s+1} - {e}")
 
-# -----------------------
-# Editable Preview
-# -----------------------
 st.markdown('<div class="section-title">📝 Preview & Edit</div>', unsafe_allow_html=True)
 if "preview_text" not in st.session_state or not st.session_state.preview_text:
     st.session_state.preview_text = full_text[:2000] + ("..." if len(full_text) > 2000 else "")
 
 preview_text = st.text_area("Preview (editable)", value=st.session_state.preview_text, height=250)
 st.session_state.preview_text = preview_text
-
-# Show word count & estimated audio time
 word_count = len(preview_text.split())
 est_time_min = math.ceil(word_count / 150)
 st.info(f"📝 Words: {word_count} | ⏱️ Estimated audio length: {est_time_min} min")
-
 if word_count > 10000:
     st.warning("⚠️ Large text detected. Consider splitting into smaller parts.")
-
-# -----------------------
-# Voice & Speed
-# -----------------------
 st.markdown('<div class="section-title">🎙️ Voice & Speed</div>', unsafe_allow_html=True)
 voice_option = st.selectbox("Voice", ["Male", "Female"])
 speed = st.selectbox("Speed", ["0.5x Very Slow", "0.75x Slow", "1x Normal", "1.25x Fast", "1.5x Faster", "2x Turbo"])
-
-# -----------------------
-# Conversion Function
-# -----------------------
 def convert_text_to_mp3_bytes(text_to_convert: str):
     mp3_io = io.BytesIO()
     if not text_to_convert.strip():
@@ -224,10 +174,6 @@ def convert_text_to_mp3_bytes(text_to_convert: str):
                 pass
 
     return mp3_io, None
-
-# -----------------------
-# Convert Buttons
-# -----------------------
 st.markdown('<div class="section-title">🎧 Convert</div>', unsafe_allow_html=True)
 cols = st.columns(2)
 
@@ -261,4 +207,5 @@ with cols[1]:
                     data=mp3_io,
                     file_name="full.mp3",
                     mime="audio/mp3"
+
                 )
